@@ -9,7 +9,7 @@ rotos = []
 def createFrameholds():
     for x in frame:
         fh = nuke.nodes.FrameHold(firstFrame = frame[x]).setInput(0, frameRange)
-        roto = nuke.nodes.Roto(premultiply = "alpha").setInput(0, fh)
+        roto = nuke.nodes.Roto(output = "alpha", premultiply = "alpha").setInput(0, fh)
         rotos.append(roto)
         
 
@@ -17,4 +17,7 @@ def createFrameholds():
 frameRange.setInput(0, nuke.selectedNode())
 createFrameholds()
 appendClips = nuke.nodes.AppendClip(inputs = rotos)
+shuffleGround = nuke.nodes.Shuffle(inputs = [appendClips])
+removeGround = nuke.nodes.Remove(operation = "keep", channels = "red").setInput(0, appendClips)
+
 
