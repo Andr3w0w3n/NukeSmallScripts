@@ -30,23 +30,23 @@ def promptUserFrame(mainPanel):
 
 #returns the level of copycat quality the user would want
 def promptUserQuality(mainPanel, copyCatNode):
-        match mainPanel.value("Quality of Job"):
-            case "Low":
-                copyCatNode.knob('epochs').setValue(40000)
-                copyCatNode.knob('modelSize').setValue("Medium")
-                copyCatNode.knob('cropSize').setValue(128)
-            case "Medium":
-                copyCatNode.knob('epochs').setValue(40000)
-                copyCatNode.knob('modelSize').setValue("Medium")
-                copyCatNode.knob('cropSize').setValue(256)
-            case "High":
-                copyCatNode.knob('epochs').setValue(40000)
-                copyCatNode.knob('modelSize').setValue("Large")
-                copyCatNode.knob('cropSize').setValue(256)
-            case _:
-                copyCatNode.knob('epochs').setValue(40000)
-                copyCatNode.knob('modelSize').setValue("Medium")
-                copyCatNode.knob('cropSize').setValue(128)
+    quality = mainPanel.value("Quality of Job")
+    if quality == "Low":
+        copyCatNode.knob('epochs').setValue(40000)
+        copyCatNode.knob('modelSize').setValue("Medium")
+        copyCatNode.knob('cropSize').setValue(128)
+    elif quality == "Medium":
+        copyCatNode.knob('epochs').setValue(40000)
+        copyCatNode.knob('modelSize').setValue("Medium")
+        copyCatNode.knob('cropSize').setValue(256)
+    elif quality == "High":
+        copyCatNode.knob('epochs').setValue(40000)
+        copyCatNode.knob('modelSize').setValue("Large")
+        copyCatNode.knob('cropSize').setValue(256)
+    else:
+        copyCatNode.knob('epochs').setValue(40000)
+        copyCatNode.knob('modelSize').setValue("Medium")
+        copyCatNode.knob('cropSize').setValue(128)
 
 def main():
     mainPanel = nuke.Panel("Quick CopyCat Roto System Creation")
