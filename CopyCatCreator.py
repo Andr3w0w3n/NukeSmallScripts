@@ -4,7 +4,6 @@ import nuke
 
 rotos = []
 
-
 #creating the frame holds and rotos
 def createFrameholds(frame, frameRange):
     for x in frame:
@@ -14,25 +13,47 @@ def createFrameholds(frame, frameRange):
         roto.setInput(0, fh)
         rotos.append(roto)
 
-#def prompt():
-    #user_input = nuke.getInput("Enter the frames you want to have (seperated by a space):", "0")
-    #frameString = mainPanel.addSingleLineInput("Enter the frames you want to have (seperated by a space):", "0")
-    #mainPanel.show()
-    #if mainPanel.ok:
-    #    frame = [int(n) for n in frameString.value().split()]
-    #elif mainPanel.cancel:
-    #    nuke.message("User cancelled operation")
-    #    return
-        
-def prompt():
-    mainPanel = nuke.Panel("Quick CopyCat Roto System Creation")
-    mainPanel.addSingleLineInput("Enter the frames (separated by a space):", "0")
-    mainPanel.show()
+#returns the user selected frames or the automatically created frames 
+def promptUserFrame(mainPanel):
+    temp = []
+    if len(mainPanel.value("Enter the frames (separated by a space):")) == 0:
+        nuke.message("With no frame(s) inquired, it has defaulted to every 15 frames for the clip length. \n Starting from the first frame")
+        first_frame = nuke.Root().firstFrame()
+        last_frame = nuke.Root().lastFrame()
+        addedFrame = first_frame
+        while(addedFrame < last_frame):
+            temp.append(addedFrame)
+            addedFrame = addedFrame+15
+        return temp
+    
     return [int(n) for n in mainPanel.value("Enter the frames (separated by a space):").split()]
- 
-      
+
+#returns the level of copycat quality the user would want
+def promptUserQuality(mainPanel, copyCatNode):
+        match mainPanel.value("Quality of Job"):
+            case "Low":
+                copyCatNode.knob('epochs').setValue(40000)
+                copyCatNode.knob('modelSize').setValue("Medium")
+                copyCatNode.knob('cropSize').setValue(128)
+            case "Medium":
+                copyCatNode.knob('epochs').setValue(40000)
+                copyCatNode.knob('modelSize').setValue("Medium")
+                copyCatNode.knob('cropSize').setValue(256)
+            case "High":
+                copyCatNode.knob('epochs').setValue(40000)
+                copyCatNode.knob('modelSize').setValue("Large")
+                copyCatNode.knob('cropSize').setValue(256)
+            case _:
+                copyCatNode.knob('epochs').setValue(40000)
+                copyCatNode.knob('modelSize').setValue("Medium")
+                copyCatNode.knob('cropSize').setValue(128)
+
 def main():
-    frame = prompt().copy()
+    mainPanel = nuke.Panel("Quick CopyCat Roto System Creation")
+    mainPanel.addSingleLineInput("Enter the frames (separated by a space):", "")
+    mainPanel.addEnumerationPulldown("Quality of Job", "Low Medium High")
+    mainPanel.show()
+    frame = promptUserFrame(mainPanel).copy()
 
     frameRange = nuke.nodes.FrameRange(first_frame = 1, last_frame = 1)
     #print(frame)
@@ -55,6 +76,8 @@ def main():
 
     #copycat
     copyCatNode = nuke.nodes.CopyCat(inputs = [removeInput, removeGround])
+    promptUserQuality(mainPanel, copyCatNode)
+    
 
 if __name__ == "__main__":
     main()
