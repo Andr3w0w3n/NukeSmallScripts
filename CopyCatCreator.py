@@ -22,12 +22,7 @@ appendClips = nuke.nodes.AppendClip(inputs = rotos)
 
 #setting ground truth
 
-#WTF, WHY WONT THIS SHUFFLE WORK??? ChatGPT can't even seem to come up with a correct answer!!!!
-#*shuffleGround = nuke.createNode('Shuffle')
-#shuffleGround.setInput(0, appendClips)
-#shuffleGround.knob('red_in').setValue('alpha')
-
-copyGround = nuke.nodes.Copy(input = [appendClips, appendClips])
+copyGround = nuke.nodes.Copy(inputs = [appendClips, appendClips])
 copyGround.knob('to0').setValue('rgba.red')
 
 
@@ -36,6 +31,7 @@ removeGround.setInput(0, copyGround)
 
 #setting input
 removeInput = nuke.nodes.Remove(operation = "keep", channels = "rgb")
+removeInput.setInput(0, appendClips)
 
 #copycat
 
