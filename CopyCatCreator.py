@@ -1,7 +1,5 @@
 import nuke
 
-#frame ranges and the frame range variable/node created
-
 rotos = []
 
 #creating the frame holds and rotos
@@ -56,13 +54,13 @@ def main():
     frame = promptUserFrame(mainPanel).copy()
 
     frameRange = nuke.nodes.FrameRange(first_frame = 1, last_frame = 1)
-    #print(frame)
-    #start by connecting to whatever node you have selected
+    
+    #start by connecting to whatever node the user has selected
     frameRange.setInput(0, nuke.selectedNode())
     createFrameholds(frame, frameRange)
     appendClips = nuke.nodes.AppendClip(inputs = rotos)
 
-    #setting ground truth
+    #setting ground truth path
     copyGround = nuke.nodes.Copy(inputs = [appendClips, appendClips])
     copyGround.knob('from0').setValue('rgba.alpha')
     copyGround.knob('to0').setValue('rgba.red')
@@ -70,11 +68,11 @@ def main():
     removeGround = nuke.nodes.Remove(operation = "keep", channels = "red")
     removeGround.setInput(0, copyGround)
 
-    #setting input
+    #setting input path
     removeInput = nuke.nodes.Remove(operation = "keep", channels = "rgb")
     removeInput.setInput(0, appendClips)
 
-    #copycat
+    #copycat setup/settings change
     copyCatNode = nuke.nodes.CopyCat(inputs = [removeInput, removeGround])
     promptUserQuality(mainPanel, copyCatNode)
     
